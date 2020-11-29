@@ -2,12 +2,13 @@ package stacks
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/gorilla/mux"
 	httperror "github.com/portainer/libhttp/error"
-	"github.com/portainer/portainer/api"
+	portainer "github.com/portainer/portainer/api"
 	"github.com/portainer/portainer/api/http/security"
 	"github.com/portainer/portainer/api/internal/authorization"
 )
@@ -91,4 +92,8 @@ func (handler *Handler) userCanCreateStack(securityContext *security.RestrictedR
 	}
 
 	return handler.userIsAdminOrEndpointAdmin(user, endpointID)
+}
+
+func stackResourceID(stack *portainer.Stack) string {
+	return fmt.Sprintf("%d_%s", stack.EndpointID, stack.Name)
 }

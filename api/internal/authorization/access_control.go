@@ -1,9 +1,10 @@
 package authorization
 
 import (
+	"fmt"
 	"strconv"
 
-	"github.com/portainer/portainer/api"
+	portainer "github.com/portainer/portainer/api"
 )
 
 // NewPrivateResourceControl will create a new private resource control associated to the resource specified by the
@@ -95,7 +96,7 @@ func NewRestrictedResourceControl(resourceIdentifier string, resourceType portai
 func DecorateStacks(stacks []portainer.Stack, resourceControls []portainer.ResourceControl) []portainer.Stack {
 	for idx, stack := range stacks {
 
-		resourceControl := GetResourceControlByResourceIDAndType(stack.Name, portainer.StackResourceControl, resourceControls)
+		resourceControl := GetResourceControlByResourceIDAndType(fmt.Sprintf("%d_%s", stack.EndpointID, stack.Name), portainer.StackResourceControl, resourceControls)
 		if resourceControl != nil {
 			stacks[idx].ResourceControl = resourceControl
 		}

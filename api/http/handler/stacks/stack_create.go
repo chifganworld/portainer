@@ -184,7 +184,7 @@ func (handler *Handler) isValidStackFile(stackFileContent []byte, settings *port
 }
 
 func (handler *Handler) decorateStackResponse(w http.ResponseWriter, stack *portainer.Stack, userID portainer.UserID) *httperror.HandlerError {
-	resourceControl := authorization.NewPrivateResourceControl(stack.Name, portainer.StackResourceControl, userID)
+	resourceControl := authorization.NewPrivateResourceControl(stackResourceID(stack), portainer.StackResourceControl, userID)
 
 	err := handler.DataStore.ResourceControl().CreateResourceControl(resourceControl)
 	if err != nil {
@@ -206,6 +206,8 @@ func (handler *Handler) validateUniqueName(name string) error {
 			return errStackAlreadyExists
 		}
 	}
+
+	// TODO: check external stacks
 
 	return nil
 }

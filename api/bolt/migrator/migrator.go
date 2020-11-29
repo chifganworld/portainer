@@ -2,7 +2,7 @@ package migrator
 
 import (
 	"github.com/boltdb/bolt"
-	"github.com/portainer/portainer/api"
+	portainer "github.com/portainer/portainer/api"
 	"github.com/portainer/portainer/api/bolt/endpoint"
 	"github.com/portainer/portainer/api/bolt/endpointgroup"
 	"github.com/portainer/portainer/api/bolt/endpointrelation"
@@ -337,6 +337,14 @@ func (m *Migrator) Migrate() error {
 		}
 
 		err = m.updateStacksToDB24()
+		if err != nil {
+			return err
+		}
+	}
+
+	// Portainer 2.1
+	if m.currentDBVersion < 26 {
+		err := m.updateStackResourceControlToDB23()
 		if err != nil {
 			return err
 		}
