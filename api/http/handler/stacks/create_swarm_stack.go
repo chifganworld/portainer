@@ -5,12 +5,11 @@ import (
 	"net/http"
 	"path"
 	"strconv"
-	"strings"
 
 	"github.com/asaskevich/govalidator"
 	httperror "github.com/portainer/libhttp/error"
 	"github.com/portainer/libhttp/request"
-	"github.com/portainer/portainer/api"
+	portainer "github.com/portainer/portainer/api"
 	"github.com/portainer/portainer/api/filesystem"
 	"github.com/portainer/portainer/api/http/security"
 )
@@ -42,15 +41,9 @@ func (handler *Handler) createSwarmStackFromFileContent(w http.ResponseWriter, r
 		return &httperror.HandlerError{http.StatusBadRequest, "Invalid request payload", err}
 	}
 
-	stacks, err := handler.DataStore.Stack().Stacks()
+	err = handler.validateUniqueName(payload.Name)
 	if err != nil {
-		return &httperror.HandlerError{http.StatusInternalServerError, "Unable to retrieve stacks from the database", err}
-	}
-
-	for _, stack := range stacks {
-		if strings.EqualFold(stack.Name, payload.Name) {
-			return &httperror.HandlerError{http.StatusConflict, "A stack with this name already exists", errStackAlreadyExists}
-		}
+		return &httperror.HandlerError{http.StatusConflict, "A stack with this name already exists", err}
 	}
 
 	stackID := handler.DataStore.Stack().GetNextIdentifier()
@@ -132,15 +125,9 @@ func (handler *Handler) createSwarmStackFromGitRepository(w http.ResponseWriter,
 		return &httperror.HandlerError{http.StatusBadRequest, "Invalid request payload", err}
 	}
 
-	stacks, err := handler.DataStore.Stack().Stacks()
+	err = handler.validateUniqueName(payload.Name)
 	if err != nil {
-		return &httperror.HandlerError{http.StatusInternalServerError, "Unable to retrieve stacks from the database", err}
-	}
-
-	for _, stack := range stacks {
-		if strings.EqualFold(stack.Name, payload.Name) {
-			return &httperror.HandlerError{http.StatusConflict, "A stack with this name already exists", errStackAlreadyExists}
-		}
+		return &httperror.HandlerError{http.StatusConflict, "A stack with this name already exists", err}
 	}
 
 	stackID := handler.DataStore.Stack().GetNextIdentifier()
@@ -236,15 +223,9 @@ func (handler *Handler) createSwarmStackFromFileUpload(w http.ResponseWriter, r 
 		return &httperror.HandlerError{http.StatusBadRequest, "Invalid request payload", err}
 	}
 
-	stacks, err := handler.DataStore.Stack().Stacks()
+	err = handler.validateUniqueName(payload.Name)
 	if err != nil {
-		return &httperror.HandlerError{http.StatusInternalServerError, "Unable to retrieve stacks from the database", err}
-	}
-
-	for _, stack := range stacks {
-		if strings.EqualFold(stack.Name, payload.Name) {
-			return &httperror.HandlerError{http.StatusConflict, "A stack with this name already exists", errStackAlreadyExists}
-		}
+		return &httperror.HandlerError{http.StatusConflict, "A stack with this name already exists", err}
 	}
 
 	stackID := handler.DataStore.Stack().GetNextIdentifier()
